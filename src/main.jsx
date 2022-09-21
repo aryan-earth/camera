@@ -59,14 +59,13 @@ const WebcamStreamCapture = () => {
       ) : (
         <button onClick={handleStartCaptureClick}>Start Capture</button>
       )}
-      {recordedChunks.length > 0 && (
+      {recordedChunks.length >= 0 && (
         <button onClick={handleDownload}>Download</button>
       )}
     </>
   );
 };
 
-// ReactDOM.render(<WebcamStreamCapture />, document.getElementById("root"));
 
 // https://www.npmjs.com/package/react-webcam
 
