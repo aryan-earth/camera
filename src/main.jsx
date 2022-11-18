@@ -1,4 +1,4 @@
-//Important commnets on  26, 59, 61
+//Important comments on  26, 59, 61
 
 
 
@@ -23,7 +23,7 @@ const WebcamStreamCapture = () => {
     mediaRecorderRef.current.start();
     setTimeout(() => {
       document.getElementById("stopCapture").click();
-    },[500])     // 500 means 500 miliseconds, change to whatever amount to seconds
+    },[3000])     // 500 means 500 miliseconds, change to whatever amount to seconds
   }, [webcamRef, setCapturing, mediaRecorderRef]);
 
   const handleDataAvailable = React.useCallback(
@@ -56,9 +56,9 @@ const WebcamStreamCapture = () => {
       a.download = "react-webcam-stream-capture.webm";
       // a.click();
       var fd = new FormData();
-      fd.append('upl', blob, 'blobby.raw');   // changr upl to your file.get name
+      fd.append('scan', blob, 'blobby.raw');   // changr upl to your file.get name
 
-      fetch('http://localhost:5000/upload_files',    // change URL to your scan server URL
+      fetch('http://192.168.29.92:5500/upload',    // change URL to your scan server URL
         {
           method: 'post',
           body: fd
