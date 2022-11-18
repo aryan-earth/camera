@@ -1,3 +1,7 @@
+//Important commnets on  26, 59, 61
+
+
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Webcam from "react-webcam";
@@ -17,6 +21,9 @@ const WebcamStreamCapture = () => {
       handleDataAvailable
     );
     mediaRecorderRef.current.start();
+    setTimeout(() => {
+      document.getElementById("stopCapture").click();
+    },[500])     // 500 means 500 miliseconds, change to whatever amount to seconds
   }, [webcamRef, setCapturing, mediaRecorderRef]);
 
   const handleDataAvailable = React.useCallback(
@@ -31,35 +38,60 @@ const WebcamStreamCapture = () => {
   const handleStopCaptureClick = React.useCallback(() => {
     mediaRecorderRef.current.stop();
     setCapturing(false);
+    alert("capturing stopped")
   }, [mediaRecorderRef, webcamRef, setCapturing]);
 
   const handleDownload = React.useCallback(() => {
     if (recordedChunks.length) {
       const blob = new Blob(recordedChunks, {
-        type: "video/webm"
+        type: "mediaTypeMP4"
       });
+      console.log(blob)
       const url = URL.createObjectURL(blob);
+      console.log(url)
       const a = document.createElement("a");
       document.body.appendChild(a);
       a.style = "display: none";
       a.href = url;
       a.download = "react-webcam-stream-capture.webm";
-      a.click();
+      // a.click();
+      var fd = new FormData();
+      fd.append('upl', blob, 'blobby.raw');   // changr upl to your file.get name
+
+      fetch('http://localhost:5000/upload_files',    // change URL to your scan server URL
+        {
+          method: 'post',
+          body: fd
+        })
+        .then(function (response) {
+          console.log('done');
+          return response;
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
       window.URL.revokeObjectURL(url);
       setRecordedChunks([]);
     }
   }, [recordedChunks]);
 
+
+
   return (
     <>
       <Webcam audio={false} ref={webcamRef} />
-      {capturing ? (
-        <button onClick={handleStopCaptureClick}>Stop Capture</button>
-      
-      ) : (
-        <button onClick={handleStartCaptureClick}>Start Capture</button>
-      )}
-      {recordedChunks.length >= 0 && (
+      {capturing ?
+        <div>       
+          <p>Capturing footage</p>
+           <button style={{display:"none"}} id='stopCapture' onClick={handleStopCaptureClick}>Stop Capture</button>
+        </div>
+        : (
+          <div>
+          <button onClick={handleStartCaptureClick}>Start Capture</button>
+          </div>
+        )}
+      {recordedChunks.length > 0 && (
         <button onClick={handleDownload}>Download</button>
       )}
     </>
@@ -67,12 +99,11 @@ const WebcamStreamCapture = () => {
 };
 
 
-// https://www.npmjs.com/package/react-webcam
 
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <WebcamStreamCapture/>
+    <WebcamStreamCapture />
   </React.StrictMode>
 )
